@@ -1,15 +1,15 @@
 #include <iostream>
 #include <zlib.h>
-#include <kseq.h>
-
-KSEQ_INIT(gzFile, gzread)
+#include "seq.h"
 
 using namespace std;
 
 int main() {
-    gzFile fp;
-    kseq_t *seq;
+    FileHandler fh;
+    fh.open("/home/manh/snp-sites/paper_supporting_material/small.aln");
 
-    fp = gzopen("/mnt/c/Users/Teko/Downloads/s_typhi_wong_holt.aln.gz", "r");
-    seq = kseq_init(fp);
+    string seq;
+    while (seq = fh.next_seq(), seq != "") {
+        cout << seq;
+    }
 }

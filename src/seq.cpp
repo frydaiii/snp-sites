@@ -1,40 +1,43 @@
 #include "seq.h"
 
-FileHandler::FileHandler() {
-    buffer_start = 0;
-    buffer_end = 0;
-    eof = false;
-    buffer_size = 2048;
+SnpSite::SnpSite(string filename) {
+    fh = FileHandler(2048);
+    fh.open(filename);
 }
 
-FileHandler::FileHandler(int _buffer_size) {
-    buffer_start = 0;
-    buffer_end = 0;
-    eof = false;
-    buffer_size = _buffer_size;
-}
-
-void FileHandler::open(string filename) {
-    file = gzopen(filename.c_str(), "r");
-}
-
-int FileHandler::next_char() {
-    if (buffer_end <= buffer_start) {
-        buffer = (unsigned char*)malloc(buffer_size);
-        buffer_end = gzread(file, buffer, buffer_size);
-        buffer_start = 0;
+int SnpSite::is_unknown(char base)
+{
+    switch (base) {
+        case 'N':
+        case 'n':
+        case '-':
+        case '?':
+            return 1;
+        default:
+            return 0;
     }
-    return buffer[buffer_start++];
 }
 
-string FileHandler::next_seq() {
-    // TODO: implement me
-    seq = "";
-    int c;
-    while (c = next_char() != '>') {}
-    while (c = next_char() != '\n') {}
-    while (c = next_char() != '\n') {
-        seq += c;
+string SnpSite::detect_snps() {
+    int seq_length = -1;
+    string seq;
+    while (seq = fh.next_seq(), seq != "") {
+        if (seq_length == -1) {
+            seq_length = seq.length();
+            reference_seq = string(seq_length, 'N');
+        }
+
+        for (int i = 0; i < seq_length; i++) {
+            if (reference_seq[i] == '>') {
+                continue;
+            }
+            if (reference_seq[i] == 'N' && !is_unknown(seq[i])) {
+                reference_seq[i] = seq[i];
+            }
+            if (reference_seq[i] != 'N' && !is_unknown(seq[i]) && reference_seq[i] != seq[i]) {
+                reference_seq[i] = '>';
+            }
+        }
     }
-    return seq;
+    return reference_seq;
 }

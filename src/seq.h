@@ -1,25 +1,13 @@
-#ifndef SEQ_H_
-#include <zlib.h>
-#include <string>
+#include "file_handler.h"
 
-using namespace std;
-
-#define SEQ_H_
-
-class FileHandler {
+class SnpSite {
 private:
-    string seq;
-    gzFile file;
-    unsigned char *buffer;
-    int buffer_size, buffer_start, buffer_end;
-    bool eof;
+    string reference_seq;
+    int seq_length;
+    FileHandler fh;
 public:
-    FileHandler();
-    FileHandler(int _buffer_size);
+    SnpSite(string filename);
 
-    void open(string filename);
-    int next_char();
-    string next_seq();
+    int is_unknown(char base);
+    string detect_snps();
 };
-
-#endif

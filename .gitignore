@@ -2,3 +2,6 @@ src/main
 .vscode/launch.json
 .vscode/tasks.json
 sample
+src/file_handler
+.gitignore
+src/seq

@@ -2,12 +2,13 @@
 
 class SnpSite {
 private:
-    string reference_seq;
+    string reference_seq, inputfile;
     int seq_length;
     FileHandler fh;
 public:
-    SnpSite(string filename);
+    SnpSite(string _inputfile);
 
     int is_unknown(char base);
-    string detect_snps();
+    void detect_snps();
+    void print_result(string filename);
 };

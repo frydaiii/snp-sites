@@ -8,7 +8,7 @@ using namespace std;
 
 class FileHandler {
 private:
-    string seq;
+    // string seq;
     gzFile file;
     unsigned char *buffer;
     int buffer_size, buffer_start, buffer_end;
@@ -18,8 +18,11 @@ public:
     FileHandler(int _buffer_size);
 
     void open(string filename);
+    void close();
     int next_char();
+    string next_sample_name();
     string next_seq();
+    bool is_eof();
 };
 
 #endif

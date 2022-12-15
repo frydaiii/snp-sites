@@ -1,8 +1,9 @@
 #include "seq.h"
 
-SnpSite::SnpSite(string filename) {
+SnpSite::SnpSite(string _inputfile) {
     fh = FileHandler(2048);
-    fh.open(filename);
+    int seq_length = -1;
+    inputfile = _inputfile;
 }
 
 int SnpSite::is_unknown(char base)
@@ -18,8 +19,8 @@ int SnpSite::is_unknown(char base)
     }
 }
 
-string SnpSite::detect_snps() {
-    int seq_length = -1;
+void SnpSite::detect_snps() {
+    fh.open(inputfile);
     string seq;
     while (seq = fh.next_seq(), seq != "") {
         if (seq_length == -1) {
@@ -39,5 +40,27 @@ string SnpSite::detect_snps() {
             }
         }
     }
-    return reference_seq;
+    fh.close();
+}
+
+void SnpSite::print_result(string filename) {
+    FILE *f = fopen(filename.c_str(), "w");
+    fh.open(inputfile);
+
+    while (!fh.is_eof()) {
+        string sample_name, seq;
+        sample_name = fh.next_sample_name();
+        seq = fh.next_seq();
+
+        fprintf(f, "%s\n", sample_name.c_str());
+        for (int i = 0; i < seq_length; i++) {
+            if (reference_seq[i] == '>') {
+                fputc(seq[i], f);
+            }
+        }
+        fputc('\n', f);
+    }
+
+    fh.close();
+    fclose(f);
 }

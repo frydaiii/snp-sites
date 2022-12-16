@@ -1,6 +1,7 @@
 #ifndef SEQ_H_
 #include <zlib.h>
 #include <string>
+#include <tuple>
 
 using namespace std;
 
@@ -21,7 +22,7 @@ public:
     void close();
     int next_char();
     string next_sample_name();
-    string next_seq();
+    tuple<string, string> next_seq();
     bool is_eof();
 };
 

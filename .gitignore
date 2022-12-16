@@ -5,3 +5,4 @@ sample
 src/file_handler
 .gitignore
 src/seq
+.vscode/settings.json

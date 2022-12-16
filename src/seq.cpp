@@ -1,8 +1,8 @@
 #include "seq.h"
 
 SnpSite::SnpSite(string _inputfile) {
-    fh = FileHandler(2048);
-    int seq_length = -1;
+    fh = FileHandler();
+    seq_length = -1;
     inputfile = _inputfile;
 }
 
@@ -21,8 +21,9 @@ int SnpSite::is_unknown(char base)
 
 void SnpSite::detect_snps() {
     fh.open(inputfile);
-    string seq;
-    while (seq = fh.next_seq(), seq != "") {
+    string seq, sample_name;
+    while (tie(sample_name, seq) = fh.next_seq(), seq != "") {
+
         if (seq_length == -1) {
             seq_length = seq.length();
             reference_seq = string(seq_length, 'N');
@@ -44,15 +45,15 @@ void SnpSite::detect_snps() {
 }
 
 void SnpSite::print_result(string filename) {
-    FILE *f = fopen(filename.c_str(), "w");
+    // FILE *f = fopen(filename.c_str(), "w");
+    FILE *f = fopen("/home/manh/snp-sites-1/sample/big_file_self.aln", "w");
     fh.open(inputfile);
 
     while (!fh.is_eof()) {
         string sample_name, seq;
-        sample_name = fh.next_sample_name();
-        seq = fh.next_seq();
+        tie(sample_name, seq) = fh.next_seq();
 
-        fprintf(f, "%s\n", sample_name.c_str());
+        fprintf(f, ">%s\n", sample_name.c_str());
         for (int i = 0; i < seq_length; i++) {
             if (reference_seq[i] == '>') {
                 fputc(seq[i], f);

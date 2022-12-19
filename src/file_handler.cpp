@@ -42,7 +42,15 @@ int FileHandler::next_char() {
 // }
 
 tuple<string, string> FileHandler::next_seq() {
-    // TODO: implement me
+    /*
+        TO DO (sort by priority):
+        - return pointer instead of value.
+        - use reverse to allocate mem, 2^n more each time.
+        - use pair instead of tuple. 
+        - optimize compiler.
+
+        last solution: use char* :(
+    */
     string seq = "", sample_name = "";
     while (current_char != '>' && !eof) {
         current_char = next_char();

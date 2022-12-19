@@ -12,7 +12,7 @@ private:
     // string seq;
     gzFile file;
     unsigned char *buffer;
-    int buffer_size, buffer_start, buffer_end;
+    int buffer_size, buffer_start, buffer_end, current_char;
     bool eof;
 public:
     FileHandler();

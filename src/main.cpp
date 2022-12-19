@@ -7,9 +7,9 @@ int main() {
     start = clock();
 
     // SnpSite snp_site("/home/manh/snp-sites-1/sample/sample.aln");
-    SnpSite snp_site("/mnt/c/Users/Teko/Downloads/s_typhi_wong_holt.aln.gz");
+    SnpSite snp_site("/mnt/c/Users/Teko/Downloads/s_typhi_wong_holt.aln");
     snp_site.detect_snps();
-    snp_site.print_result("/home/manh/snp-sites-1/sample/sample_out.aln");
+    snp_site.print_result("");
 
     end = clock();
     printf("complete in %f secs", ((double) (end - start)) / CLOCKS_PER_SEC);

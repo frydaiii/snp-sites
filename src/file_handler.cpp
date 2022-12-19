@@ -13,6 +13,7 @@ FileHandler::FileHandler() : FileHandler(2048) {}
 void FileHandler::open(string filename) {
     file = gzopen(filename.c_str(), "r");
     eof = false;
+    current_char = -1;
 }
 
 void FileHandler::close() {
@@ -43,13 +44,15 @@ int FileHandler::next_char() {
 tuple<string, string> FileHandler::next_seq() {
     // TODO: implement me
     string seq = "", sample_name = "";
-    int c;
-    while (c = next_char(), c != '>' && !eof) {}
-    while (c = next_char(), c != '\n' && !eof) {
-        sample_name += c;
+    while (current_char != '>' && !eof) {
+        current_char = next_char();
     }
-    while (c = next_char(), c != '\n' && !eof) {
-        seq += c;
+    while (current_char = next_char(), current_char != '\n' && !eof) {
+        sample_name += current_char;
+    }
+    while (current_char = next_char(), current_char != '>' && !eof) {
+        if (current_char == '\n') {continue;}
+        seq += current_char;
     }
     return {sample_name, seq};
 }

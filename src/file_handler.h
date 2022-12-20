@@ -23,6 +23,7 @@ public:
     int next_char();
     string next_sample_name();
     tuple<string, string> next_seq();
+    pair<string, string> next_seq(int seq_length);
     bool is_eof();
 };
 

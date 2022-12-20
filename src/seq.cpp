@@ -21,8 +21,10 @@ int SnpSite::is_unknown(char base)
 
 void SnpSite::detect_snps() {
     fh.open(inputfile);
-    string seq, sample_name;
-    while (tie(sample_name, seq) = fh.next_seq(), seq != "") {
+    pair<string, string> sample;
+    while (!fh.is_eof()) {
+        sample = fh.next_seq(seq_length);
+        string sample_name = sample.first, seq = sample.second;
 
         if (seq_length == -1) {
             seq_length = seq.length();
@@ -46,7 +48,7 @@ void SnpSite::detect_snps() {
 
 void SnpSite::print_result(string filename) {
     // FILE *f = fopen(filename.c_str(), "w");
-    FILE *f = fopen("/home/manh/snp-sites-1/sample/big_file_self.aln", "w");
+    FILE *f = fopen("/home/manh/snp-sites-1/sample/my_code_result.aln", "w");
     // FILE *f = fopen("/home/manh/snp-sites-1/sample/sample_out.aln", "w");
     fh.open(inputfile);
 

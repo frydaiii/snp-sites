@@ -92,7 +92,7 @@ pair<string, string> FileHandler::next_seq(int seq_length) {
     // }
     int i;
     while (true) {
-        i = buffer_start;
+        i = buffer_start; // stuck in here
         while (buffer[i] != '\n' && buffer[i] != '>' && i < buffer_end) i++;
         seq.append((char*)(buffer + i), i - buffer_start);
         if (buffer[i] == '>') break;

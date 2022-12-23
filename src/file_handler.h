@@ -2,6 +2,7 @@
 #include <zlib.h>
 #include <string>
 #include <tuple>
+#include <string.h>
 
 using namespace std;
 

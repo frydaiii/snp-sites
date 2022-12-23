@@ -80,20 +80,25 @@ pair<string, string> FileHandler::next_seq(int seq_length) {
         last solution: use char* :(
     */
     string seq, sample_name = "";
-    if (seq_length == -1) {
-        seq.reserve(5000000);
-    } else {
-        seq.reserve(seq_length);
-    }
     while (current_char != '>' && !eof) {
         current_char = next_char();
     }
     while (current_char = next_char(), current_char != '\n' && !eof) {
         sample_name += current_char;
     }
-    while (current_char = next_char(), current_char != '>' && !eof) {
-        if (current_char == '\n') {continue;}
-        seq += current_char;
+    // while (current_char = next_char(), current_char != '>' && !eof) {
+    //     if (current_char == '\n') continue;
+    //     seq += current_char;
+    // }
+    int i;
+    while (true) {
+        i = buffer_start;
+        while (buffer[i] != '\n' && buffer[i] != '>' && i < buffer_end) i++;
+        seq.append((char*)(buffer + i), i - buffer_start);
+        if (buffer[i] == '>') break;
+        if (buffer[i] == '\n') i++;
     }
+    buffer_start = i;
+    current_char = buffer[buffer_start];
     return {sample_name, seq};
 }

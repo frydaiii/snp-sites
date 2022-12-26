@@ -26,6 +26,7 @@ public:
     tuple<string, string> next_seq();
     pair<string, string> next_seq(int seq_length);
     bool is_eof();
+    void get_line_and_append_to(string *s);
 };
 
 #endif

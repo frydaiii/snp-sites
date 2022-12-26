@@ -1,8 +1,9 @@
 #include "file_handler.h"
+#include <iostream>
 
 FileHandler::FileHandler(int _buffer_size) {
-    buffer_start = 0;
-    buffer_end = 0;
+    buffer_start = -1;
+    buffer_end = -1;
     eof = false;
     buffer_size = _buffer_size;
     buffer = (unsigned char*)malloc(buffer_size);
@@ -21,100 +22,50 @@ void FileHandler::close() {
 }
 
 int FileHandler::next_char() {
+    /* Read current character and increase cursor (buffer_start) by 1*/
     if (buffer_start >= buffer_end) {
-        // if (eof) return -1;
         buffer_end = gzread(file, buffer, buffer_size);
-        buffer_start = 0;
+        buffer_start = -1;
         if (buffer_end == 0) eof = true;
-        // if (buffer_end == 0) return -1;
     }
-    return buffer[buffer_start++];
+    return buffer[++buffer_start];
 }
-
-// string FileHandler::next_sample_name() {
-//     string sample_name = "";
-//     while (current_char != '>' && !eof) {current_char = next_char();}
-//     while (current_char != '\n' && !eof) {
-//         sample_name += current_char;
-//         current_char = next_char();
-//     }
-//     return sample_name;
-// }
-
-// tuple<string, string> FileHandler::next_seq() {
-//     /*
-//         TO DO (sort by priority):
-//         - return pointer instead of value.
-//         - use reverse to allocate mem, 2^n more each time.
-//         - use pair instead of tuple. 
-//         - optimize compiler.
-
-//         last solution: use char* :(
-//     */
-//     string seq = "", sample_name = "";
-//     while (current_char != '>' && !eof) {
-//         current_char = next_char();
-//     }
-//     while (current_char = next_char(), current_char != '\n' && !eof) {
-//         sample_name += current_char;
-//     }
-//     while (current_char = next_char(), current_char != '>' && !eof) {
-//         if (current_char == '\n') {continue;}
-//         seq += current_char;
-//     }
-//     return {sample_name, seq};
-// }
 
 bool FileHandler::is_eof() {
     return eof;
 }
 
-pair<string, string> FileHandler::next_seq(int seq_length) {
+void FileHandler::get_line_and_append_to(string *s) {
     /*
-        TO DO (sort by priority):
-        - return pointer instead of value.
-        - use reverse to allocate mem, 2^n more each time.
-        - use pair instead of tuple. 
-        - optimize compiler.
-
-        last solution: use char* :(
+        Read to the end of current line and append bytes read to s.
+        When done cursor will be at the end of the line.
     */
-    string seq, sample_name = "";
-    while (next_char() != '>' && !eof) {}
-    char c;
-    while (c = next_char(), c != '\n' && !eof) {
-        sample_name += c;
-    }
-    // while (current_char = next_char(), current_char != '>' && !eof) {
-    //     if (current_char == '\n') continue;
-    //     seq += current_char;
-    // }
-    // if (i >= buffer_end) {
-    //     buffer_end = gzread(file, buffer, buffer_size);
-    //     buffer_start = i = 0;
-    //     if (buffer_end == 0) {
-    //         eof = true;
-    //     }
-    // }
+
     int i = buffer_start;
-    while (buffer[i] != '>') {
+    while (buffer[i] != '\n') {
         if (buffer_start >= buffer_end) {
             buffer_end = gzread(file, buffer, buffer_size);
             buffer_start = 0;
+            i = 0;
             if (buffer_end == 0) {
                 eof = true;
                 break;
             }
         }
-        i = buffer_start;
-        while (buffer[i] != '\n' && buffer[i] != '>' && i < buffer_end) i++;
-        // string s;
-        // s.append((char*)(buffer + buffer_start), i - buffer_start);
-        seq.append((char*)(buffer + buffer_start), i - buffer_start);
-        buffer_start = i + 1;
-        // if (buffer[i] == '>') break;
+        while (buffer[i] != '\n' && i < buffer_end) i++;
+        s->append((char*)(buffer + buffer_start), i - buffer_start);
+        buffer_start = i;
     }
-    // current_char = buffer[i];
-    // current_char = buffer[buffer_start];
+}
+
+pair<string, string> FileHandler::next_seq(int seq_length) {
+    string seq, sample_name = "";
+    while (next_char() != '>' && !eof) {}
+    get_line_and_append_to(&sample_name);
+    int i = buffer_start;
+    while (next_char() != '>' && !eof) {
+        get_line_and_append_to(&seq);
+    }
+    buffer_start--;
     return {sample_name, seq};
 }

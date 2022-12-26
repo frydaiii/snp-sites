@@ -12,7 +12,7 @@ class FileHandler {
 private:
     // string seq;
     gzFile file;
-    unsigned char *buffer;
+    char buffer[2048];
     int buffer_size, buffer_start, buffer_end;
     bool eof;
 public:

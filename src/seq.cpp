@@ -57,7 +57,7 @@ void SnpSite::detect_snps() {
 
 void SnpSite::print_result(string filename) {
     // FILE *f = fopen(filename.c_str(), "w");
-    FILE *f = fopen("/home/manh/snp-sites-1/sample/my_code_result.aln", "w");
+    FILE *f = fopen("/home/manht/snp-sites-1/sample/my_code_result.aln", "w");
     // FILE *f = fopen("/home/manh/snp-sites-1/sample/sample_out.aln", "w");
     fh.open(inputfile);
 

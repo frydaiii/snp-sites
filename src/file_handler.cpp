@@ -6,7 +6,7 @@ FileHandler::FileHandler(int _buffer_size) {
     buffer_end = -1;
     eof = false;
     buffer_size = _buffer_size;
-    buffer = (unsigned char*)malloc(buffer_size);
+    // buffer = char[2048];
 }
 
 FileHandler::FileHandler() : FileHandler(2048) {}

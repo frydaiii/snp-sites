@@ -54,7 +54,7 @@ void SnpSite::print_result(string filename) {
 
     while (!fh.is_eof()) {
         string sample_name, seq;
-        tie(sample_name, seq) = fh.next_seq();
+        tie(sample_name, seq) = fh.next_seq(-1);
 
         fprintf(f, ">%s\n", sample_name.c_str());
         for (int i = 0; i < seq_length; i++) {

@@ -2,7 +2,8 @@
 
 class SnpSite {
 private:
-    string reference_seq, inputfile;
+    string inputfile;
+    char *reference_seq;
     int seq_length;
     FileHandler fh;
 public:

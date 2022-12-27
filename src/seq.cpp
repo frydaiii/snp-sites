@@ -42,11 +42,13 @@ void SnpSite::detect_snps() {
             }
             if (reference_seq[i] != 'N' && !is_unknown(seq[i]) && reference_seq[i] != toupper(seq[i])) {
                 reference_seq[i] = '>';
+                snps_location.push_back(i);
             }
         }
         free(sample_name);
         free(seq);
     }
+    sort(snps_location.begin(), snps_location.end());
     fh.close();
 
 }
@@ -61,10 +63,13 @@ void SnpSite::print_result(string filename) {
         char *sample_name = sample.first.c_str(), *seq = sample.second.c_str();
 
         fprintf(f, "%s\n", sample_name);
-        for (int i = 0; i < seq_length; i++) {
-            if (reference_seq[i] == '>') {
-                fputc(seq[i], f);
-            }
+        // for (int i = 0; i < seq_length; i++) {
+        //     if (reference_seq[i] == '>') {
+        //         fputc(seq[i], f);
+        //     }
+        // }
+        for (int loc:snps_location) {
+            fputc(seq[loc], f);
         }
         fputc('\n', f);
         free(sample_name);

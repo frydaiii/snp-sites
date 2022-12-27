@@ -24,7 +24,7 @@ void SnpSite::detect_snps() {
     pair<MyString, MyString> sample;
     // int count_snp = 0, count_sample = 0;
     while (!fh.is_eof()) {
-        sample = fh.next_seq(seq_length);
+        sample = fh.next_seq();
         char *sample_name = sample.first.c_str(), *seq = sample.second.c_str();
 
         // if (strstr(sample_name, "Salmonella_enterica_subsp_enterica_serovar_Typhi_str_P_stx_12_v1") != NULL) {
@@ -70,7 +70,7 @@ void SnpSite::print_result(string filename) {
     fh.open(inputfile);
 
     while (!fh.is_eof()) {
-        pair<MyString, MyString> sample = fh.next_seq(seq_length);
+        pair<MyString, MyString> sample = fh.next_seq();
         char *sample_name = sample.first.c_str(), *seq = sample.second.c_str();
 
         fprintf(f, "%s\n", sample_name);

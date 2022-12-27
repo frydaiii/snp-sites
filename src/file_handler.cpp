@@ -29,14 +29,36 @@ bool FileHandler::is_eof() {
     return eof;
 }
 
-void FileHandler::get_line_and_append_to(MyString *s) {
+#define SEP_SPACE 0 // isspace(): \t, \n, \v, \f, \r
+#define SEP_TAB   1 // isspace() && !' '
+#define SEP_LINE  2 // line separator: "\n" (Unix) or "\r\n" (Windows)
+#define SEP_MAX   2
+
+bool FileHandler::match_delimiter(int delimiter, int c) {
     /*
-        Read to the end of current line and append bytes read to s.
+        Check if c match delimiter.
+    */
+    switch (delimiter) {
+        case SEP_SPACE:
+            return isspace(c);
+        case SEP_TAB:
+            return isspace(c) && c != ' ';
+        case SEP_LINE:
+            return c == '\n';
+        default:
+            if (delimiter > SEP_MAX) return c == delimiter;
+            else return false;
+    }
+}
+
+void FileHandler::get_until(int delimiter, MyString *s) {
+    /*
+        Read till delimiter and append bytes read to s.
         When done cursor will be at the end of the line.
     */
 
     int i = buffer_start;
-    while (buffer[i] != '\n') {
+    while (!match_delimiter(delimiter, buffer[i])) {
         if (buffer_start >= buffer_end) {
             buffer_end = gzread(file, buffer, 2048);
             buffer_start = 0;
@@ -46,19 +68,20 @@ void FileHandler::get_line_and_append_to(MyString *s) {
                 break;
             }
         }
-        while (buffer[i] != '\n' && i < buffer_end) i++;
+        while (!match_delimiter(delimiter, buffer[i]) && i < buffer_end) i++;
         s->append((char*)(buffer + buffer_start), i - buffer_start);
         buffer_start = i;
     }
 }
 
-pair<MyString, MyString> FileHandler::next_seq() {
-    MyString seq, sample_name;
-    while (next_char() != '>' && !eof) {}
-    get_line_and_append_to(&sample_name);
-    while (next_char() != '>' && !eof) {
-        get_line_and_append_to(&seq);
+pair<MyString, MyString> FileHandler::next_sample() {
+    MyString seq, name;
+    int c;
+    while (!eof && (c = next_char()) != '>' && c != '@') {} // read until meet sample name
+    get_until(SEP_SPACE, &name); // get sample name
+    while (!eof && (c = next_char()) != '>' && c != '@' && c != '+') {
+        get_until(SEP_LINE, &seq); // read sequence
     }
-    buffer_start--;
-    return {sample_name, seq};
+    buffer_start--; // step back to the end of sequence
+    return {name, seq};
 }

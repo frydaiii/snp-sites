@@ -2,6 +2,7 @@
 #include <zlib.h>
 #include <utility>
 #include <string>
+#include <ctype.h>
 #include "my_string.h"
 
 using namespace std;
@@ -20,11 +21,11 @@ public:
 
     void open(string filename);
     void close();
+    void get_until(int delimiter, MyString *s);
+    pair<MyString, MyString> next_sample();
     int next_char();
-    string next_sample_name();
-    pair<MyString, MyString> next_seq();
     bool is_eof();
-    void get_line_and_append_to(MyString *s);
+    bool match_delimiter(int delimiter, int c);
 };
 
 #endif

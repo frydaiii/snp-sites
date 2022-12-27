@@ -1,5 +1,4 @@
 #include <iostream>
-#include <zlib.h>
 #include "seq.h"
 
 int main() {

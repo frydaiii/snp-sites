@@ -1,5 +1,5 @@
 #include "file_handler.h"
-#include <algorithm>
+#include <errno.h>
 #include <vector>
 #include <stdio.h>
 
@@ -7,9 +7,9 @@ class SnpSite {
 private:
     char* inputfile;
     char *reference_seq;
-    int seq_length;
+    int seq_length, num_of_snps;
     FileHandler fh;
-    vector<int> snps_location;
+    int *snps_location;
 public:
     SnpSite(char* _inputfile);
 

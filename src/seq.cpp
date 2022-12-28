@@ -3,6 +3,7 @@
 SnpSite::SnpSite(char* _inputfile) {
     fh = FileHandler();
     seq_length = -1;
+    num_of_snps = 0;
     inputfile = _inputfile;
 }
 
@@ -28,7 +29,7 @@ void SnpSite::detect_snps() {
 
         if (seq_length == -1) {
             seq_length = sample.second.length();
-            reference_seq = (char*) malloc(seq_length);
+            reference_seq = new char[seq_length * sizeof(char)];
             memset(reference_seq, 'N', seq_length);
         }
 
@@ -41,19 +42,28 @@ void SnpSite::detect_snps() {
             }
             if (reference_seq[i] != 'N' && !is_unknown(seq[i]) && reference_seq[i] != toupper(seq[i])) {
                 reference_seq[i] = '>';
-                snps_location.push_back(i);
+                num_of_snps++;
             }
         }
-        free(sample_name);
-        free(seq);
+        delete(sample_name);
+        delete(seq);
     }
-    sort(snps_location.begin(), snps_location.end());
+    snps_location = new int[num_of_snps * sizeof(int)];
+    int j = 0;
+    for (int i = 0; i < seq_length; i++) {
+        if (reference_seq[i] == '>') {
+            snps_location[j++] = i;
+        }
+    }
     fh.close();
 }
 
 void SnpSite::print_result(char* filename) {
-    FILE *f = fopen("/home/manh/snp-sites-1/sample/my_code_result.aln", "w");
-    // FILE *f = fopen("/home/manh/snp-sites-1/sample/sample_out.aln", "w");
+    FILE *f = fopen(filename, "w");
+    if (!f) {
+        fprintf(stderr, "ERROR: cannot open %s for writing: %s\n", filename, strerror(errno));
+        exit(EXIT_FAILURE);
+    }
     fh.open(inputfile);
 
     while (!fh.is_eof()) {
@@ -61,14 +71,15 @@ void SnpSite::print_result(char* filename) {
         char *sample_name = sample.first.c_str(), *seq = sample.second.c_str();
 
         fprintf(f, "%s\n", sample_name);
-        for (int loc:snps_location) {
-            fputc(seq[loc], f);
+        for (int i = 0; i < num_of_snps; i++) {
+            fputc(seq[snps_location[i]], f);
         }
         fputc('\n', f);
-        free(sample_name);
-        free(seq);
+        delete(sample_name);
+        delete(seq);
     }
 
+    delete(snps_location);
     fh.close();
     fclose(f);
 }

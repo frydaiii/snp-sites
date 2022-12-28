@@ -5,7 +5,8 @@
 MyString::MyString() {
     len = 0; 
     cap = 1;
-    s = (char*) malloc(cap * sizeof(char));
+    // s = (char*) malloc(cap * sizeof(char));
+    s = new char[cap * sizeof(char)];
 }
 
 void MyString::append(char *_s, int _len) {

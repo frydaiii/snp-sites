@@ -91,12 +91,14 @@ void FileHandler::get_until(int delimiter, MyString *s) {
     }
 }
 
+/* Note: this function do not read quality score for QUAL file.*/
 pair<MyString, MyString> FileHandler::next_sample() {
     MyString seq, name;
     int c;
     while (!eof && (c = next_char()) != '>' && c != '@') {} // read until meet sample name
     get_until(SEP_SPACE, &name); // get sample name
     while (!eof && (c = next_char()) != '>' && c != '@' && c != '+') {
+        if (c == '\n') continue;
         get_until(SEP_LINE, &seq); // read sequence
     }
     buffer_start--; // step back to the end of sequence

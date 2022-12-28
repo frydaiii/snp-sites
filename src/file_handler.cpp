@@ -6,8 +6,8 @@ FileHandler::FileHandler() {
     eof = false;
 }
 
-void FileHandler::open(string filename) {
-    file = gzopen(filename.c_str(), "r");
+void FileHandler::open(char* filename) {
+    file = gzopen(filename, "r");
     eof = false;
 }
 
@@ -34,31 +34,48 @@ bool FileHandler::is_eof() {
 #define SEP_LINE  2 // line separator: "\n" (Unix) or "\r\n" (Windows)
 #define SEP_MAX   2
 
-bool FileHandler::match_delimiter(int delimiter, int c) {
-    /*
-        Check if c match delimiter.
-    */
-    switch (delimiter) {
-        case SEP_SPACE:
-            return isspace(c);
-        case SEP_TAB:
-            return isspace(c) && c != ' ';
-        case SEP_LINE:
-            return c == '\n';
-        default:
-            if (delimiter > SEP_MAX) return c == delimiter;
-            else return false;
-    }
+// list of function to compare c and delimiter, need exactly 2 arguments.
+bool match_space(int c, int delimter) {
+    return isspace(c);
 }
+bool match_tab(int c, int delimter) {
+    return isspace(c) && c != ' ';
+}
+bool match_newline(int c, int delimter) {
+    return c == '\n';
+}
+bool match_char(int c, int delimter) {
+    return c == delimter;
+}
+bool no_match(int c, int delimiter) {
+    return false;
+}
+// end list.
 
 void FileHandler::get_until(int delimiter, MyString *s) {
     /*
         Read till delimiter and append bytes read to s.
         When done cursor will be at the end of the line.
     */
+    match_func match; // function to check if a char match delimiter
+    switch (delimiter) {
+        case SEP_SPACE:
+            match = match_space;
+            break;
+        case SEP_TAB:
+            match = match_tab;
+            break;
+        case SEP_LINE:
+            match = match_newline;
+            break;
+        default:
+            if (delimiter > SEP_MAX) match = match_char;
+            else match = no_match;
+    }
 
+    // begin process
     int i = buffer_start;
-    while (!match_delimiter(delimiter, buffer[i])) {
+    while (!match(buffer[i], delimiter)) {
         if (buffer_start >= buffer_end) {
             buffer_end = gzread(file, buffer, 2048);
             buffer_start = 0;
@@ -68,7 +85,7 @@ void FileHandler::get_until(int delimiter, MyString *s) {
                 break;
             }
         }
-        while (!match_delimiter(delimiter, buffer[i]) && i < buffer_end) i++;
+        while (!match(buffer[i], delimiter) && i < buffer_end) i++;
         s->append((char*)(buffer + buffer_start), i - buffer_start);
         buffer_start = i;
     }

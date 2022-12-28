@@ -7,9 +7,9 @@ int main() {
 
     // TODO deprecate string
 
-    // SnpSite snp_site("/home/manht/snp-sites-1/sample/sample.aln");
-    // SnpSite snp_site("/mnt/c/Users/Teko/Downloads/s_typhi_wong_holt.aln");
-    SnpSite snp_site("/mnt/c/Users/manht/Downloads/s_typhi_wong_holt.aln.gz");
+    // SnpSite snp_site("/home/manh/snp-sites-1/sample/sample.aln");
+    SnpSite snp_site("/mnt/c/Users/Teko/Downloads/s_typhi_wong_holt.aln");
+    // SnpSite snp_site("/mnt/c/Users/manht/Downloads/s_typhi_wong_holt.aln.gz");
     snp_site.detect_snps();
     end = clock();
     printf("complete detect %f secs\n", ((double) (end - start)) / CLOCKS_PER_SEC);

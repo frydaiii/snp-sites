@@ -6,3 +6,4 @@ Assuming the total amount of memory being initialized in your two examples is th
 ```
 > [Why malloc+memset is slower than calloc?](https://stackoverflow.com/questions/2688466/why-mallocmemset-is-slower-than-calloc)
 
+### read by batch is faster than one-by-one

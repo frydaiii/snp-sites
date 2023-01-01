@@ -8,7 +8,7 @@ FileHandler::FileHandler() {
     eof = false;
 }
 
-void FileHandler::open(char* filename) {
+void FileHandler::open(const char* filename) {
     file = gzopen(filename, "r");
     eof = false;
 }

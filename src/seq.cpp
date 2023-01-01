@@ -21,44 +21,34 @@ int SnpSite::is_unknown(char base)
 }
 
 void SnpSite::detect_snps() {
-    fh.open(inputfile);
-    // pair<string*, string*> sample;
-    string *sample_name = new string, *seq = new string;
+    string sample_name, seq;
+    fh.open(this->inputfile.c_str());
     while (!fh.is_eof()) {
-        // sample = fh.next_sample();
-        // // char *sample_name = sample.first.c_str(), *seq = sample.second.c_str();
-        // string *sample_name = sample.first, *seq = sample.second;
-        fh.assign_next_sample_to(sample_name, seq);
+        fh.assign_next_sample_to(&sample_name, &seq);
 
         if (seq_length == -1) {
-            // seq_length = sample.second->length();
-            seq_length = seq->length();
-            reference_seq = new char[seq_length * sizeof(char)];
-            memset(reference_seq, 'N', seq_length);
+            this->seq_length = seq.length();
+            this->reference_seq = string(this->seq_length, 'N');
         }
 
-        for (int i = 0; i < seq_length; i++) {
-            if (reference_seq[i] == '>') {
+        for (int i = 0; i < this->seq_length; i++) {
+            if (this->reference_seq[i] == '>') {
                 continue;
             }
-            if (reference_seq[i] == 'N' && !is_unknown((*seq)[i])) {
-                reference_seq[i] = toupper((*seq)[i]);
+            if (this->reference_seq[i] == 'N' && !is_unknown(seq[i])) {
+                this->reference_seq[i] = toupper(seq[i]);
             }
-            if (reference_seq[i] != 'N' && !is_unknown((*seq)[i]) && reference_seq[i] != toupper((*seq)[i])) {
-                reference_seq[i] = '>';
-                num_of_snps++;
+            if (this->reference_seq[i] != 'N' && !is_unknown(seq[i]) && this->reference_seq[i] != toupper(seq[i])) {
+                this->reference_seq[i] = '>';
+                this->num_of_snps++;
             }
         }
-        // delete(sample_name);
-        // delete(seq);
     }
-    delete(sample_name);
-    delete(seq);
-    snps_location = new int[num_of_snps * sizeof(int)];
+    this->snps_location = new int[this->num_of_snps * sizeof(int)];
     int j = 0;
-    for (int i = 0; i < seq_length; i++) {
-        if (reference_seq[i] == '>') {
-            snps_location[j++] = i;
+    for (int i = 0; i < this->seq_length; i++) {
+        if (this->reference_seq[i] == '>') {
+            this->snps_location[j++] = i;
         }
     }
     fh.close();
@@ -70,25 +60,22 @@ void SnpSite::print_result(char* filename) {
         fprintf(stderr, "ERROR: cannot open %s for writing: %s\n", filename, strerror(errno));
         exit(EXIT_FAILURE);
     }
-    fh.open(inputfile);
+    fh.open(this->inputfile.c_str());
 
-    string *sample_name = new string, *seq = new string;
+    string sample_name, seq;
     while (!fh.is_eof()) {
-        // pair<string*, string*> sample = fh.next_sample();
-        // char *sample_name = sample.first.c_str(), *seq = sample.second.c_str();
-        // string *sample_name = sample.first, *seq = sample.second;
-        fh.assign_next_sample_to(sample_name, seq);
+        fh.assign_next_sample_to(&sample_name, &seq);
 
-        fprintf(f, "%s\n", sample_name->c_str());
-        for (int i = 0; i < num_of_snps; i++) {
-            fputc((*seq)[snps_location[i]], f);
+        fprintf(f, "%s\n", sample_name.c_str());
+        for (int i = 0; i < this->num_of_snps; i++) {
+            fputc(seq[this->snps_location[i]], f);
         }
         fputc('\n', f);
     }
-    delete(sample_name);
-    delete(seq);
-
-    delete(snps_location);
     fh.close();
     fclose(f);
+}
+
+void SnpSite::clean() {
+    delete(this->snps_location);
 }

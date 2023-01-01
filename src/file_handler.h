@@ -22,7 +22,7 @@ public:
     FileHandler();
     FileHandler(int _buffer_size);
 
-    void open(char* filename);
+    void open(const char* filename);
     void close();
     pair<string*, string*> next_sample();
     void assign_next_sample_to(string *name, string *seq);

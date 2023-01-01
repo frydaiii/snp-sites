@@ -5,8 +5,7 @@
 
 class SnpSite {
 private:
-    char* inputfile;
-    char *reference_seq;
+    string inputfile, reference_seq;
     int seq_length, num_of_snps;
     FileHandler fh;
     int *snps_location;
@@ -16,4 +15,5 @@ public:
     int is_unknown(char base);
     void detect_snps();
     void print_result(char* filename);
+    void clean();
 };

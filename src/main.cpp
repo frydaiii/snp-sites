@@ -6,6 +6,9 @@ int main(int argc, char *argv[]) {
     start = clock();
 
     // check to see if the input alignment file exists
+    argv[1] = "/mnt/c/Users/manht/Downloads/s_typhi_wong_holt.aln.gz";
+    argv[2] = "/home/manht/snp-sites-1/sample/their_result.aln";
+
     if (access(argv[1], F_OK) == -1) {
         fprintf(stderr, "ERROR: cannot access input alignment file '%s'\n", argv[1]);
         fflush(stderr);

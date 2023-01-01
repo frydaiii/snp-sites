@@ -22,9 +22,9 @@ int SnpSite::is_unknown(char base)
 
 void SnpSite::detect_snps() {
     string sample_name, seq;
-    fh.open(this->inputfile.c_str());
-    while (!fh.is_eof()) {
-        fh.assign_next_sample_to(&sample_name, &seq);
+    this->fh.open(this->inputfile.c_str());
+    while (!this->fh.is_eof()) {
+        this->fh.assign_next_sample_to(&sample_name, &seq);
 
         if (seq_length == -1) {
             this->seq_length = seq.length();
@@ -51,7 +51,7 @@ void SnpSite::detect_snps() {
             this->snps_location[j++] = i;
         }
     }
-    fh.close();
+    this->fh.close();
 }
 
 void SnpSite::print_result(char* filename) {
@@ -60,11 +60,11 @@ void SnpSite::print_result(char* filename) {
         fprintf(stderr, "ERROR: cannot open %s for writing: %s\n", filename, strerror(errno));
         exit(EXIT_FAILURE);
     }
-    fh.open(this->inputfile.c_str());
+    this->fh.open(this->inputfile.c_str());
 
     string sample_name, seq;
-    while (!fh.is_eof()) {
-        fh.assign_next_sample_to(&sample_name, &seq);
+    while (!this->fh.is_eof()) {
+        this->fh.assign_next_sample_to(&sample_name, &seq);
 
         fprintf(f, "%s\n", sample_name.c_str());
         for (int i = 0; i < this->num_of_snps; i++) {
@@ -72,7 +72,7 @@ void SnpSite::print_result(char* filename) {
         }
         fputc('\n', f);
     }
-    fh.close();
+    this->fh.close();
     fclose(f);
 }
 

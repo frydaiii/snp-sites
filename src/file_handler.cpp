@@ -1,5 +1,7 @@
 #include "file_handler.h"
 
+#define kroundup32(x) (--(x), (x)|=(x)>>1, (x)|=(x)>>2, (x)|=(x)>>4, (x)|=(x)>>8, (x)|=(x)>>16, ++(x))
+
 FileHandler::FileHandler() {
     buffer_start = -1;
     buffer_end = -1;
@@ -52,7 +54,27 @@ bool no_match(int c, int delimiter) {
 }
 // end list.
 
-void FileHandler::get_until(int delimiter, MyString *s) {
+int growthCap(const int& old_cap, const int& new_len) {
+    int new_cap = old_cap, double_cap = 2 * old_cap;
+    if (new_len > double_cap) {
+        new_cap = new_len;
+    } else {
+        int const threshold = 256;
+        if (old_cap < threshold) {
+            new_cap = double_cap;
+        } else {
+            while (0 < new_cap && new_cap < new_len) {
+                new_cap += (new_cap + 3*threshold) / 4;
+            }
+            if (new_cap <= 0) {
+				new_cap = new_len;
+			}
+        }
+    }
+    return new_cap;
+}
+
+void FileHandler::get_until(int delimiter, string *s) {
     /*
         Read till delimiter and append bytes read to s.
         When done cursor will be at the end of the line.
@@ -86,21 +108,42 @@ void FileHandler::get_until(int delimiter, MyString *s) {
             }
         }
         while (!match(buffer[i], delimiter) && i < buffer_end) i++;
+        if (s->capacity() - (i - buffer_start) < 1) {
+            int newcap = s->capacity() + i - buffer_start;
+            kroundup32(newcap);
+            // newcap = growthCap(s->capacity(), newcap);
+            s->reserve(newcap);
+        }
         s->append((char*)(buffer + buffer_start), i - buffer_start);
         buffer_start = i;
     }
 }
 
 /* Note: this function do not read quality score for QUAL file.*/
-pair<MyString, MyString> FileHandler::next_sample() {
-    MyString seq, name;
+pair<string*, string*> FileHandler::next_sample() {
+    string *seq = new string, *name = new string;
     int c;
     while (!eof && (c = next_char()) != '>' && c != '@') {} // read until meet sample name
-    get_until(SEP_SPACE, &name); // get sample name
+    get_until(SEP_SPACE, name); // get sample name
     while (!eof && (c = next_char()) != '>' && c != '@' && c != '+') {
         if (c == '\n') continue;
-        get_until(SEP_LINE, &seq); // read sequence
+        get_until(SEP_LINE, seq); // read sequence
     }
     buffer_start--; // step back to the end of sequence
     return {name, seq};
+}
+
+/* Note: this function do not read quality score for QUAL file.*/
+void FileHandler::assign_next_sample_to(string *name, string *seq) {
+    /* Get next sample name and sequence, assign it to *name and *seq.*/
+    name->erase();
+    seq->erase();
+    int c;
+    while (!eof && (c = next_char()) != '>' && c != '@') {} // read until meet sample name
+    get_until(SEP_SPACE, name); // get sample name
+    while (!eof && (c = next_char()) != '>' && c != '@' && c != '+') {
+        if (c == '\n') continue;
+        get_until(SEP_LINE, seq); // read sequence
+    }
+    buffer_start--; // step back to the end of sequence
 }

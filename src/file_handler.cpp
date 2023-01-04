@@ -1,32 +1,32 @@
 #include "file_handler.h"
 
 file_handler::FileHandler::FileHandler() {
-    buffer_start = -1;
-    buffer_end = -1;
-    eof = false;
+    this->buffer_start = -1;
+    this->buffer_end = -1;
+    this->eof = false;
 }
 
 void file_handler::FileHandler::open(const char* filename) {
-    file = gzopen(filename, "r");
-    eof = false;
+    this->file = gzopen(filename, "r");
+    this->eof = false;
 }
 
 void file_handler::FileHandler::close() {
     gzclose(file);
 }
 
+/* Read current character and increase cursor (buffer_start) by 1.*/
 int file_handler::FileHandler::next_char() {
-    /* Read current character and increase cursor (buffer_start) by 1.*/
-    if (buffer_start >= buffer_end) {
-        buffer_end = gzread(file, buffer, 2048);
-        buffer_start = -1;
-        if (buffer_end == 0) eof = true;
+    if (this->buffer_start >= this->buffer_end) {
+        this->buffer_end = gzread(file, buffer, 2048);
+        this->buffer_start = -1;
+        if (this->buffer_end == 0) this->eof = true;
     }
-    return buffer[++buffer_start];
+    return this->buffer[++this->buffer_start];
 }
 
 bool file_handler::FileHandler::is_eof() {
-    return eof;
+    return this->eof;
 }
 
 #define SEP_SPACE 0 // isspace(): \t, \n, \v, \f, \r
@@ -72,11 +72,11 @@ int growthCap(const int& old_cap, const int& new_len) {
     return new_cap;
 }
 
+/*
+    Read till delimiter and append bytes read to s.
+    When done cursor will be at the end of the line.
+*/
 void file_handler::FileHandler::get_until(int delimiter, string *s) {
-    /*
-        Read till delimiter and append bytes read to s.
-        When done cursor will be at the end of the line.
-    */
     file_handler::match_func match; // function to check if a char match delimiter
     switch (delimiter) {
         case SEP_SPACE:
@@ -94,45 +94,33 @@ void file_handler::FileHandler::get_until(int delimiter, string *s) {
     }
 
     // begin process
-    int i = buffer_start;
+    int i = this->buffer_start;
     while (!match(buffer[i], delimiter)) {
-        if (buffer_start >= buffer_end) {
-            buffer_end = gzread(file, buffer, 2048);
-            buffer_start = 0;
+        if (this->buffer_start >= this->buffer_end) {
+            this->buffer_end = gzread(this->file, this->buffer, 2048);
+            this->buffer_start = 0;
             i = 0;
-            if (buffer_end == 0) {
-                eof = true;
+            if (this->buffer_end == 0) {
+                this->eof = true;
                 break;
             }
         }
-        while (!match(buffer[i], delimiter) && i < buffer_end) i++;
-        if (s->capacity() < (i - buffer_start) + 1) {
-            int newcap = s->capacity() + i - buffer_start;
+        while (!match(this->buffer[i], delimiter) && i < this->buffer_end) i++;
+        if (s->capacity() < (i - this->buffer_start) + 1) {
+            int newcap = s->capacity() + i - this->buffer_start;
             newcap = growthCap(s->capacity(), newcap);
             s->reserve(newcap);
         }
-        s->append((char*)(buffer + buffer_start), i - buffer_start);
-        buffer_start = i;
+        s->append((char*)(this->buffer + this->buffer_start), i - this->buffer_start);
+        this->buffer_start = i;
     }
 }
 
-/* Note: this function do not read quality score for QUAL file.*/
-pair<string*, string*> file_handler::FileHandler::next_sample() {
-    string *seq = new string, *name = new string;
-    int c;
-    while (!eof && (c = next_char()) != '>' && c != '@') {} // read until meet sample name
-    get_until(SEP_SPACE, name); // get sample name
-    while (!eof && (c = next_char()) != '>' && c != '@' && c != '+') {
-        if (c == '\n') continue;
-        get_until(SEP_LINE, seq); // read sequence
-    }
-    buffer_start--; // step back to the end of sequence
-    return {name, seq};
-}
-
-/* Note: this function do not read quality score for QUAL file.*/
+/* 
+    Get next sample name and sequence, assign it to *name and *seq.
+    Note: this function do not read quality score for QUAL file.
+*/
 void file_handler::FileHandler::assign_next_sample_to(string *name, string *seq) {
-    /* Get next sample name and sequence, assign it to *name and *seq.*/
     name->erase();
     seq->erase();
     int c;

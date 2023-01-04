@@ -1,7 +1,5 @@
 #include "file_handler.h"
 
-#define kroundup32(x) (--(x), (x)|=(x)>>1, (x)|=(x)>>2, (x)|=(x)>>4, (x)|=(x)>>8, (x)|=(x)>>16, ++(x))
-
 FileHandler::FileHandler() {
     buffer_start = -1;
     buffer_end = -1;
@@ -108,10 +106,9 @@ void FileHandler::get_until(int delimiter, string *s) {
             }
         }
         while (!match(buffer[i], delimiter) && i < buffer_end) i++;
-        if (s->capacity() - (i - buffer_start) < 1) {
+        if (s->capacity() < (i - buffer_start) + 1) {
             int newcap = s->capacity() + i - buffer_start;
-            kroundup32(newcap);
-            // newcap = growthCap(s->capacity(), newcap);
+            newcap = growthCap(s->capacity(), newcap);
             s->reserve(newcap);
         }
         s->append((char*)(buffer + buffer_start), i - buffer_start);

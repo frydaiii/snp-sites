@@ -1,21 +1,21 @@
 #include "file_handler.h"
 
-FileHandler::FileHandler() {
+file_handler::FileHandler::FileHandler() {
     buffer_start = -1;
     buffer_end = -1;
     eof = false;
 }
 
-void FileHandler::open(const char* filename) {
+void file_handler::FileHandler::open(const char* filename) {
     file = gzopen(filename, "r");
     eof = false;
 }
 
-void FileHandler::close() {
+void file_handler::FileHandler::close() {
     gzclose(file);
 }
 
-int FileHandler::next_char() {
+int file_handler::FileHandler::next_char() {
     /* Read current character and increase cursor (buffer_start) by 1.*/
     if (buffer_start >= buffer_end) {
         buffer_end = gzread(file, buffer, 2048);
@@ -25,7 +25,7 @@ int FileHandler::next_char() {
     return buffer[++buffer_start];
 }
 
-bool FileHandler::is_eof() {
+bool file_handler::FileHandler::is_eof() {
     return eof;
 }
 
@@ -72,12 +72,12 @@ int growthCap(const int& old_cap, const int& new_len) {
     return new_cap;
 }
 
-void FileHandler::get_until(int delimiter, string *s) {
+void file_handler::FileHandler::get_until(int delimiter, string *s) {
     /*
         Read till delimiter and append bytes read to s.
         When done cursor will be at the end of the line.
     */
-    match_func match; // function to check if a char match delimiter
+    file_handler::match_func match; // function to check if a char match delimiter
     switch (delimiter) {
         case SEP_SPACE:
             match = match_space;
@@ -117,7 +117,7 @@ void FileHandler::get_until(int delimiter, string *s) {
 }
 
 /* Note: this function do not read quality score for QUAL file.*/
-pair<string*, string*> FileHandler::next_sample() {
+pair<string*, string*> file_handler::FileHandler::next_sample() {
     string *seq = new string, *name = new string;
     int c;
     while (!eof && (c = next_char()) != '>' && c != '@') {} // read until meet sample name
@@ -131,7 +131,7 @@ pair<string*, string*> FileHandler::next_sample() {
 }
 
 /* Note: this function do not read quality score for QUAL file.*/
-void FileHandler::assign_next_sample_to(string *name, string *seq) {
+void file_handler::FileHandler::assign_next_sample_to(string *name, string *seq) {
     /* Get next sample name and sequence, assign it to *name and *seq.*/
     name->erase();
     seq->erase();

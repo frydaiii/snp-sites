@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <cstring>
 #include <vector>
-#include <stdio.h>
+#include "vectorclass/vectorclass.h"
 
 namespace snp {
     class SnpSite {

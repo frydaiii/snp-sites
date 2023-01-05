@@ -3,6 +3,7 @@
 #include <cstring>
 #include <vector>
 #include "vectorclass/vectorclass.h"
+#include <algorithm>
 
 namespace snp {
     class SnpSite {

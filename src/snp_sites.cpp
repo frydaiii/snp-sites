@@ -1,4 +1,4 @@
-#include "seq.h"
+#include "snp_sites.h"
 
 snp::SnpSite::SnpSite(char* _inputfile) {
     fh = file_handler::FileHandler();

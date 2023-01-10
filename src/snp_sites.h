@@ -8,10 +8,11 @@
 namespace snp {
     class SnpSite {
     private:
-        string inputfile, reference_seq;
+        string inputfile;
         int seq_length, num_of_snps;
         file_handler::FileHandler fh;
         int *snps_location;
+        vector<Vec32c> refvecs;
     public:
         SnpSite(char* _inputfile);
 

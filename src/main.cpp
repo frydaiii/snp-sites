@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
 
     // check to see if the input alignment file exists
     argv[1] = "/mnt/c/Users/Teko/Downloads/s_typhi_wong_holt.aln.gz";
-    // argv[1] = "/home/manh/snp-sites-1/sample/sample.aln";1
+    // argv[1] = "/home/manh/snp-sites-1/sample/sample.aln";
     argv[2] = "/home/manh/snp-sites-1/sample/my_code_result.aln";
     if (access(argv[1], F_OK) == -1) {
         fprintf(stderr, "ERROR: cannot access input alignment file '%s'\n", argv[1]);

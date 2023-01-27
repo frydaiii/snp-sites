@@ -1,5 +1,5 @@
 #include <iostream>
-#include "snp_sites.h"
+#include "dispatcher.h"
 
 int main(int argc, char *argv[]) {
     clock_t start, end;
@@ -17,12 +17,13 @@ int main(int argc, char *argv[]) {
         fflush(stderr);
         exit(EXIT_FAILURE);
     }
-    snp::SnpSite snp_site(argv[1]);
-    snp_site.detect_snps();
-    end = clock();
-    printf("complete detect %f secs\n", ((double) (end - start)) / CLOCKS_PER_SEC);
-    snp_site.print_result(argv[2]);
-    snp_site.clean();
+    // snp::SnpSite snp_site(argv[1]);
+    // snp_site.detect_snps();
+    // end = clock();
+    // printf("complete detect %f secs\n", ((double) (end - start)) / CLOCKS_PER_SEC);
+    // snp_site.print_result(argv[2]);
+    // snp_site.clean();
+    snpfunc(argv[1], argv[2]);
 
     end = clock();
     printf("complete in %f secs\n", ((double) (end - start)) / CLOCKS_PER_SEC);

@@ -1,13 +1,19 @@
+/******************************************************************************
+                             Dispatched code
+Everything in this section is compiled multiple times, with one version for
+each instruction set. Speed-critical vector code belongs here.
+******************************************************************************/
+
 #include "snp_sites.h"
 
-snp::SnpSite::SnpSite(char* _inputfile) {
+SNP_DISPATCHED_NAMESPACE::SnpSite::SnpSite(char* _inputfile) {
     fh = file_handler::FileHandler();
     seq_length = -1;
     num_of_snps = 0;
     inputfile = _inputfile;
 }
 
-int snp::SnpSite::is_unknown(char base)
+int SNP_DISPATCHED_NAMESPACE::SnpSite::is_unknown(char base)
 {
     switch (base) {
         case 'N':
@@ -20,10 +26,10 @@ int snp::SnpSite::is_unknown(char base)
     }
 }
 
-void snp::SnpSite::detect_snps() {
+void SNP_DISPATCHED_NAMESPACE::SnpSite::detect_snps() {
     string sample_name, seq;
     this->fh.open(this->inputfile.c_str());
-    Vec32c seq_vec, ref_vec, tmp_vec;
+    Vec64c seq_vec, ref_vec, tmp_vec;
     const int vectorsize = 32;
     int datasize, arraysize;
     // round up datasize to nearest higher multiple of vectorsize
@@ -37,7 +43,7 @@ void snp::SnpSite::detect_snps() {
             arraysize = (datasize + vectorsize - 1) & (-vectorsize);
             this->seq_length = arraysize;
             for (int i = 0; i < arraysize; i += vectorsize) {
-                refvecs.push_back(Vec32c('N'));
+                refvecs.push_back(Vec64c('N'));
             }
         }
         // set excess data to 'N'
@@ -73,7 +79,7 @@ void snp::SnpSite::detect_snps() {
     this->fh.close();
 }
 
-void snp::SnpSite::print_result(char* filename) {
+void SNP_DISPATCHED_NAMESPACE::SnpSite::print_result(char* filename) {
     FILE *f = fopen(filename, "w");
     if (!f) {
         fprintf(stderr, "ERROR: cannot open %s for writing: %s\n", filename, strerror(errno));
@@ -95,6 +101,13 @@ void snp::SnpSite::print_result(char* filename) {
     fclose(f);
 }
 
-void snp::SnpSite::clean() {
+void SNP_DISPATCHED_NAMESPACE::SnpSite::clean() {
     delete(this->snps_location);
+}
+
+void SNP_DISPATCHED_NAMESPACE::get_snps(char *input_file, char *output_file) {
+    SnpSite snp_site(input_file);
+    snp_site.detect_snps();
+    snp_site.print_result(output_file);
+    snp_site.clean();
 }

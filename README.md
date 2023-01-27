@@ -7,3 +7,9 @@ Assuming the total amount of memory being initialized in your two examples is th
 > [Why malloc+memset is slower than calloc?](https://stackoverflow.com/questions/2688466/why-mallocmemset-is-slower-than-calloc)
 
 ### read by batch is faster than one-by-one
+
+### this repo implement dispatccher, base on example of vectorclass. 
+```
+snp_sites.cpp need to compile multiple times to generate multiple instances of the compiled code, each one optimized for a different instruction set. 
+Else is compiled only once, using the lowest instruction set. The common code section contains the dispatcher, startup code, user interface, and other parts of the program that do not need advanced optimization.
+```

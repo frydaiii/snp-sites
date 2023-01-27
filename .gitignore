@@ -8,3 +8,7 @@ src/seq
 .vscode/settings.json
 src/my_string
 src/snp_sites
+src/d7.o
+src/d8.o
+src/d10.o
+src/test

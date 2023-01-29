@@ -12,3 +12,4 @@ src/d7.o
 src/d8.o
 src/d10.o
 src/test
+src/dispatcher

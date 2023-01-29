@@ -1,5 +1,3 @@
-#ifndef SNP_
-#define SNP_
 #include "file_handler.h"
 #include <errno.h>
 #include <cstring>
@@ -9,7 +7,7 @@
 
 // Define function type
 // Change this to fit the entry function. Should not contain vector types:
-typedef void snpFuncType(char *input_file, char *output_file);
+typedef int snpFuncType(char *input_file, char *output_file);
 
 // Define function prototypes for each version
 namespace Ns_SSE2{ // SSE2 instruction set
@@ -33,8 +31,10 @@ namespace Ns_AVX512{ // AVX512 instruction set
 #define SNP_DISPATCHED_NAMESPACE Ns_AVX2
 #elif INSTRSET >= 7                    // AVX
 #define SNP_DISPATCHED_NAMESPACE Ns_AVX
-#else
+#elif INSTRSET == 2
 #define SNP_DISPATCHED_NAMESPACE Ns_SSE2   // SSE2
+#else
+#error Unsupported instruction set
 #endif
 // ----------------------------------------------------------------------------
 
@@ -55,6 +55,5 @@ namespace SNP_DISPATCHED_NAMESPACE {
         void clean();
     };
 
-    void get_snps(char *input_file, char *output_file);
+    int get_snps(char *input_file, char *output_file);
 }
-#endif

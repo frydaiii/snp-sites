@@ -81,7 +81,7 @@ void SNP_DISPATCHED_NAMESPACE::SnpSite::detect_snps() {
 
 void SNP_DISPATCHED_NAMESPACE::SnpSite::print_result(char* filename) {
     FILE *f = fopen(filename, "w");
-    if (!f) {
+    if (!f) {   
         fprintf(stderr, "ERROR: cannot open %s for writing: %s\n", filename, strerror(errno));
         exit(EXIT_FAILURE);
     }
@@ -105,9 +105,11 @@ void SNP_DISPATCHED_NAMESPACE::SnpSite::clean() {
     delete(this->snps_location);
 }
 
-void SNP_DISPATCHED_NAMESPACE::get_snps(char *input_file, char *output_file) {
+int SNP_DISPATCHED_NAMESPACE::get_snps(char *input_file, char *output_file) {
     SnpSite snp_site(input_file);
     snp_site.detect_snps();
     snp_site.print_result(output_file);
     snp_site.clean();
+    // static_assert(SNP_DISPATCHED_NAMESPACE == "Ns_AVX");
+    return 0;
 }

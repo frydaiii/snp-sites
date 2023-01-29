@@ -11,7 +11,7 @@
 * Apache License version 2.0 or later.
 ******************************************************************************/
 
-#include "instrset.h"
+#include "vectorclass/instrset.h"
 
 #ifdef VCL_NAMESPACE
 namespace VCL_NAMESPACE {

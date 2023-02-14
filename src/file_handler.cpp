@@ -18,7 +18,7 @@ void file_handler::FileHandler::close() {
 /* Read current character and increase cursor (buffer_start) by 1.*/
 int file_handler::FileHandler::next_char() {
     if (this->buffer_start >= this->buffer_end) {
-        this->buffer_end = gzread(file, buffer, 2048);
+        this->buffer_end = gzread(file, buffer, BUFFER_SIZE);
         this->buffer_start = -1;
         if (this->buffer_end == 0) this->eof = true;
     }
@@ -97,7 +97,7 @@ void file_handler::FileHandler::get_until(int delimiter, string *s) {
     int i = this->buffer_start;
     while (!match(buffer[i], delimiter)) {
         if (this->buffer_start >= this->buffer_end) {
-            this->buffer_end = gzread(this->file, this->buffer, 2048);
+            this->buffer_end = gzread(this->file, this->buffer, BUFFER_SIZE);
             this->buffer_start = 0;
             i = 0;
             if (this->buffer_end == 0) {

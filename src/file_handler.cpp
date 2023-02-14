@@ -9,6 +9,15 @@ file_handler::FileHandler::FileHandler() {
 void file_handler::FileHandler::open(const char* filename) {
     this->file = gzopen(filename, "r");
     this->eof = false;
+
+    std::ifstream file(filename);
+    boost::iostreams::filtering_streambuf<boost::iostreams::input> inbuf;
+    inbuf.push(boost::iostreams::gzip_decompressor());
+    inbuf.push(file);
+
+    // convert streambuf to ifstream
+    // this->instream.basic_istream<char>::rdbuf(&inbuf);
+    this->instream.open(filename);
 }
 
 void file_handler::FileHandler::close() {
@@ -128,7 +137,8 @@ void file_handler::FileHandler::assign_next_sample_to(string *name, string *seq)
     get_until(SEP_SPACE, name); // get sample name
     while (!eof && (c = next_char()) != '>' && c != '@' && c != '+') {
         if (c == '\n') continue;
-        get_until(SEP_LINE, seq); // read sequence
+        // get_until(SEP_LINE, seq); // read sequence
+        this->instream.getline(seq->data(), seq->capacity());
     }
-    buffer_start--; // step back to the end of sequence
+    // buffer_start--; // step back to the end of sequence
 }

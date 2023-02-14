@@ -19,6 +19,7 @@ namespace snp {
         int is_unknown(char base);
         void detect_snps();
         void print_result(char* filename);
+        void assign_next_sample_to(string *name, string *seq);
         void clean();
     };
 }

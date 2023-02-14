@@ -8,3 +8,4 @@ src/seq
 .vscode/settings.json
 src/my_string
 src/snp_sites
+.vscode/c_cpp_properties.json

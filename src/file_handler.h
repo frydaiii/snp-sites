@@ -3,6 +3,11 @@
 #include <utility>
 #include <ctype.h>
 #include <string>
+#include <fstream>
+#include <iostream>
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
 
 using namespace std;
 
@@ -20,6 +25,7 @@ namespace file_handler {
         int buffer_start, buffer_end;
         bool eof;
         void get_until(int delimiter, string *s);
+        ifstream instream;
     public:
         FileHandler();
 

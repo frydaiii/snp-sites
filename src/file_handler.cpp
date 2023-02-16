@@ -1,12 +1,12 @@
 #include "file_handler.h"
 
-FileHandler::FileHandler() {
+InputHandler::InputHandler() {
     this->buffer_start = -1;
     this->buffer_end = -1;
     this->eof = false;
 }
 
-void FileHandler::open(const char* filename) {
+void InputHandler::open(const char* filename) {
     this->file = gzopen(filename, "r");
     this->eof = false;
 
@@ -20,12 +20,12 @@ void FileHandler::open(const char* filename) {
     this->instream.open(filename);
 }
 
-void FileHandler::close() {
+void InputHandler::close() {
     gzclose(file);
 }
 
 /* Read current character and increase cursor (buffer_start) by 1.*/
-int FileHandler::next_char() {
+int InputHandler::next_char() {
     if (this->buffer_start >= this->buffer_end) {
         this->buffer_end = gzread(file, buffer, BUFFER_SIZE);
         this->buffer_start = -1;
@@ -34,7 +34,7 @@ int FileHandler::next_char() {
     return this->buffer[++this->buffer_start];
 }
 
-bool FileHandler::is_eof() {
+bool InputHandler::is_eof() {
     return this->eof;
 }
 
@@ -85,7 +85,7 @@ int growthCap(const int& old_cap, const int& new_len) {
     Read till delimiter and append bytes read to s.
     When done cursor will be at the end of the line.
 */
-void FileHandler::get_until(int delimiter, string *s) {
+void InputHandler::get_until(int delimiter, string *s) {
     match_func match; // function to check if a char match delimiter
     switch (delimiter) {
         case SEP_SPACE:
@@ -129,7 +129,7 @@ void FileHandler::get_until(int delimiter, string *s) {
     Get next sample name and sequence, assign it to *name and *seq.
     Note: this function do not read quality score for QUAL file.
 */
-void FileHandler::assign_next_sample_to(string *name, string *seq) {
+void InputHandler::assign_next_sample_to(string *name, string *seq) {
     name->erase();
     seq->erase();
     int c;

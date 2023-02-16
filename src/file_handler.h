@@ -17,7 +17,7 @@ using namespace std;
 
 typedef bool (*match_func)(int c, int delimiter);
 
-class FileHandler {
+class InputHandler {
 private:
     gzFile file;
     char buffer[BUFFER_SIZE]; // Static allocation for better performance.
@@ -26,7 +26,7 @@ private:
     void get_until(int delimiter, string *s);
     ifstream instream;
 public:
-    FileHandler();
+    InputHandler();
 
     void open(const char* filename);
     void close();

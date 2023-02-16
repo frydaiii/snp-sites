@@ -1,4 +1,4 @@
-#include "file_handler.h"
+#include "input_handler.h"
 #include <errno.h>
 #include <cstring>
 #include <vector>
@@ -9,7 +9,7 @@ class SnpSite {
 private:
     string inputfile;
     int seq_length, num_of_snps;
-    FileHandler fh;
+    InputHandler fh;
     int *snps_location;
     vector<Vec32c> refvecs;
 public:

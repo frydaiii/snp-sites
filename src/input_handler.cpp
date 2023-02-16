@@ -1,4 +1,4 @@
-#include "file_handler.h"
+#include "input_handler.h"
 
 InputHandler::InputHandler() {
     this->buffer_start = -1;

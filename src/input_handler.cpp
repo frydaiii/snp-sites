@@ -131,17 +131,24 @@ void InputHandler::get_until(int delimiter, string *s) {
     Get next sample name and sequence, assign it to *name and *seq.
     Note: this function do not read quality score for QUAL file.
 */
-void InputHandler::assign_next_sample_to(string *name, string *seq) {
+bool InputHandler::assign_next_sample_to(string *name, string *seq) {
     name->erase();
     seq->erase();
-    int c;
-    while (!eof && (c = next_char()) != '>' && c != '@') {} // read until meet sample name
-    get_until(SEP_SPACE, name); // get sample name
-    while (!eof && (c = next_char()) != '>' && c != '@' && c != '+') {
-        if (c == '\n') continue;
+    char c;
+    while (c != '>' && c != '@' && !this->instream.eof()) {
+        c = this->instream.get();
+        // if (c == '>' || c == '@' || c == EOF) break;
+        // c = get(this->instream);
+    } // read until meet sample name
+    // get_until(SEP_SPACE, name); // get sample name
+    if (!getline(this->instream, *name)) return false;
+    while (getline(this->instream, *seq)) {
+        c = this->instream.peek();
+        if (c == '>' || c == '@' || c == '+') break;
+        // if (c == '\n') continue;
         // get_until(SEP_LINE, seq); // read sequence
         // this->instream.getline(seq->data(), seq->capacity());
-        getline(this->instream, *seq);
     }
     // buffer_start--; // step back to the end of sequence
+    return true;
 }

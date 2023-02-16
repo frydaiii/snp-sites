@@ -33,7 +33,7 @@ public:
     void open(const char* filename);
     void close();
     pair<string*, string*> next_sample();
-    void assign_next_sample_to(string *name, string *seq);
+    bool assign_next_sample_to(string *name, string *seq);
     int next_char();
     bool is_eof();
 };

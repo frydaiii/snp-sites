@@ -28,9 +28,7 @@ void SnpSite::detect_snps() {
     int datasize, arraysize;
     // round up datasize to nearest higher multiple of vectorsize
     vector<int> snps_loc;
-    while (!this->fh.is_eof()) {
-        this->fh.assign_next_sample_to(&sample_name, &seq);
-
+    while (this->fh.assign_next_sample_to(&sample_name, &seq)) {
         if (this->seq_length == -1) {
             datasize = seq.length();
             // round up datasize to nearest higher multiple of vectorsize

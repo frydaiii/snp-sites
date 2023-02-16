@@ -1,7 +1,7 @@
 #include "snp_sites.h"
 
 SnpSite::SnpSite(char* _inputfile) {
-    fh = InputHandler();
+    InputHandler fh();
     seq_length = -1;
     num_of_snps = 0;
     inputfile = _inputfile;

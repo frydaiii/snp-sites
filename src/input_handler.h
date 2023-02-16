@@ -5,7 +5,8 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/device/file.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 
@@ -24,7 +25,8 @@ private:
     int buffer_start, buffer_end;
     bool eof;
     void get_until(int delimiter, string *s);
-    ifstream instream;
+    boost::iostreams::filtering_istream instream;
+    // ifstream instream;
 public:
     InputHandler();
 

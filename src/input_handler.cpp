@@ -11,13 +11,15 @@ void InputHandler::open(const char* filename) {
     this->eof = false;
 
     std::ifstream file(filename);
-    boost::iostreams::filtering_streambuf<boost::iostreams::input> inbuf;
-    inbuf.push(boost::iostreams::gzip_decompressor());
-    inbuf.push(file);
+    this->instream.push(boost::iostreams::gzip_decompressor());
+    this->instream.push(boost::iostreams::file_source(filename));
+    // boost::iostreams::filtering_streambuf<boost::iostreams::input> inbuf;
+    // inbuf.push(boost::iostreams::gzip_decompressor());
+    // inbuf.push(file);
 
     // convert streambuf to ifstream
     // this->instream.basic_istream<char>::rdbuf(&inbuf);
-    this->instream.open(filename);
+    // this->instream.open(filename);
 }
 
 void InputHandler::close() {
@@ -138,7 +140,8 @@ void InputHandler::assign_next_sample_to(string *name, string *seq) {
     while (!eof && (c = next_char()) != '>' && c != '@' && c != '+') {
         if (c == '\n') continue;
         // get_until(SEP_LINE, seq); // read sequence
-        this->instream.getline(seq->data(), seq->capacity());
+        // this->instream.getline(seq->data(), seq->capacity());
+        getline(this->instream, *seq);
     }
     // buffer_start--; // step back to the end of sequence
 }

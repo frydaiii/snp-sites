@@ -1,13 +1,13 @@
 #include "snp_sites.h"
 
-snp::SnpSite::SnpSite(char* _inputfile) {
-    fh = file_handler::FileHandler();
+SnpSite::SnpSite(char* _inputfile) {
+    fh = FileHandler();
     seq_length = -1;
     num_of_snps = 0;
     inputfile = _inputfile;
 }
 
-int snp::SnpSite::is_unknown(char base)
+int SnpSite::is_unknown(char base)
 {
     switch (base) {
         case 'N':
@@ -20,7 +20,7 @@ int snp::SnpSite::is_unknown(char base)
     }
 }
 
-void snp::SnpSite::detect_snps() {
+void SnpSite::detect_snps() {
     string sample_name, seq;
     this->fh.open(this->inputfile.c_str());
     Vec32c seq_vec, ref_vec, tmp_vec;
@@ -73,7 +73,7 @@ void snp::SnpSite::detect_snps() {
     this->fh.close();
 }
 
-void snp::SnpSite::print_result(char* filename) {
+void SnpSite::print_result(char* filename) {
     FILE *f = fopen(filename, "w");
     if (!f) {
         fprintf(stderr, "ERROR: cannot open %s for writing: %s\n", filename, strerror(errno));
@@ -95,6 +95,6 @@ void snp::SnpSite::print_result(char* filename) {
     fclose(f);
 }
 
-void snp::SnpSite::clean() {
+void SnpSite::clean() {
     delete(this->snps_location);
 }

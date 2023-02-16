@@ -1,12 +1,12 @@
 #include "file_handler.h"
 
-file_handler::FileHandler::FileHandler() {
+FileHandler::FileHandler() {
     this->buffer_start = -1;
     this->buffer_end = -1;
     this->eof = false;
 }
 
-void file_handler::FileHandler::open(const char* filename) {
+void FileHandler::open(const char* filename) {
     this->file = gzopen(filename, "r");
     this->eof = false;
 
@@ -20,12 +20,12 @@ void file_handler::FileHandler::open(const char* filename) {
     this->instream.open(filename);
 }
 
-void file_handler::FileHandler::close() {
+void FileHandler::close() {
     gzclose(file);
 }
 
 /* Read current character and increase cursor (buffer_start) by 1.*/
-int file_handler::FileHandler::next_char() {
+int FileHandler::next_char() {
     if (this->buffer_start >= this->buffer_end) {
         this->buffer_end = gzread(file, buffer, BUFFER_SIZE);
         this->buffer_start = -1;
@@ -34,7 +34,7 @@ int file_handler::FileHandler::next_char() {
     return this->buffer[++this->buffer_start];
 }
 
-bool file_handler::FileHandler::is_eof() {
+bool FileHandler::is_eof() {
     return this->eof;
 }
 
@@ -85,8 +85,8 @@ int growthCap(const int& old_cap, const int& new_len) {
     Read till delimiter and append bytes read to s.
     When done cursor will be at the end of the line.
 */
-void file_handler::FileHandler::get_until(int delimiter, string *s) {
-    file_handler::match_func match; // function to check if a char match delimiter
+void FileHandler::get_until(int delimiter, string *s) {
+    match_func match; // function to check if a char match delimiter
     switch (delimiter) {
         case SEP_SPACE:
             match = match_space;
@@ -129,7 +129,7 @@ void file_handler::FileHandler::get_until(int delimiter, string *s) {
     Get next sample name and sequence, assign it to *name and *seq.
     Note: this function do not read quality score for QUAL file.
 */
-void file_handler::FileHandler::assign_next_sample_to(string *name, string *seq) {
+void FileHandler::assign_next_sample_to(string *name, string *seq) {
     name->erase();
     seq->erase();
     int c;

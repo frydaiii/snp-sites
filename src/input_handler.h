@@ -36,5 +36,6 @@ public:
     bool assign_next_sample_to(string *name, string *seq);
     int next_char();
     bool is_eof();
+    void back2begin();
 };
 #endif

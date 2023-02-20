@@ -78,11 +78,10 @@ void SnpSite::print_result(char* filename) {
         exit(EXIT_FAILURE);
     }
     this->fh.open(this->inputfile.c_str());
+    // this->fh.back2begin();
 
     string sample_name, seq;
-    while (!this->fh.is_eof()) {
-        this->fh.assign_next_sample_to(&sample_name, &seq);
-
+    while (this->fh.assign_next_sample_to(&sample_name, &seq)) {
         fprintf(f, "%s\n", sample_name.c_str());
         for (int i = 0; i < this->num_of_snps; i++) {
             fputc(seq[this->snps_location[i]], f);

@@ -10,9 +10,14 @@ void InputHandler::open(const char* filename) {
     this->file = gzopen(filename, "r");
     this->eof = false;
 
+    this->instream.reset();
     std::ifstream file(filename);
     this->instream.push(boost::iostreams::gzip_decompressor());
     this->instream.push(boost::iostreams::file_source(filename));
+    // this->instream.seekg(-1);
+    // this->instream.;
+    // streampos begin = this->instream.tellg();
+    // cout << begin << endl;
     // boost::iostreams::filtering_streambuf<boost::iostreams::input> inbuf;
     // inbuf.push(boost::iostreams::gzip_decompressor());
     // inbuf.push(file);
@@ -151,4 +156,9 @@ bool InputHandler::assign_next_sample_to(string *name, string *seq) {
     }
     // buffer_start--; // step back to the end of sequence
     return true;
+}
+
+void InputHandler::back2begin() {
+    this->instream.clear();
+    this->instream.seekg(0, std::ios::beg);
 }

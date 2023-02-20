@@ -22,7 +22,6 @@ int main(int argc, char *argv[]) {
     end = clock();
     printf("complete detect %f secs\n", ((double) (end - start)) / CLOCKS_PER_SEC);
     snp_site.print_result(argv[2]);
-    snp_site.clean();
 
     end = clock();
     printf("complete in %f secs\n", ((double) (end - start)) / CLOCKS_PER_SEC);

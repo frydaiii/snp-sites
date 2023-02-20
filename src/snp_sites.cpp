@@ -1,7 +1,7 @@
 #include "snp_sites.h"
 
 SnpSite::SnpSite(char* _inputfile) {
-    InputHandler fh();
+    InputHandler fh;
     seq_length = -1;
     num_of_snps = 0;
     inputfile = _inputfile;
@@ -27,7 +27,7 @@ void SnpSite::detect_snps() {
     const int vectorsize = 32;
     int datasize, arraysize;
     // round up datasize to nearest higher multiple of vectorsize
-    vector<int> snps_loc;
+    // vector<int> snps_loc;
     while (this->fh.assign_next_sample_to(&sample_name, &seq)) {
         if (this->seq_length == -1) {
             datasize = seq.length();
@@ -60,15 +60,14 @@ void SnpSite::detect_snps() {
         int k = i / vectorsize;
         for (int j = 0; j < vectorsize; j++) {
             if (refvecs[k][j] == '>') {
-                    snps_loc.push_back(i + j);
+                    this->snps_location.push_back(i + j);
             }
         }
     }
-    this->num_of_snps = snps_loc.size();
-    this->snps_location = new int[this->num_of_snps * sizeof(int)];
-    copy(snps_loc.begin(), snps_loc.end(), this->snps_location);
-
-    this->fh.close();
+    this->num_of_snps = this->snps_location.size();
+    // this->snps_location = new int[this->num_of_snps * sizeof(int)];
+    // copy(snps_loc.begin(), snps_loc.end(), this->snps_location);
+    cout << "----------- num of snps: " << this->num_of_snps << " -----------" << endl;
 }
 
 void SnpSite::print_result(char* filename) {
@@ -82,16 +81,11 @@ void SnpSite::print_result(char* filename) {
 
     string sample_name, seq;
     while (this->fh.assign_next_sample_to(&sample_name, &seq)) {
-        fprintf(f, "%s\n", sample_name.c_str());
+        fprintf(f, ">%s\n", sample_name.c_str());
         for (int i = 0; i < this->num_of_snps; i++) {
             fputc(seq[this->snps_location[i]], f);
         }
         fputc('\n', f);
     }
-    this->fh.close();
     fclose(f);
-}
-
-void SnpSite::clean() {
-    delete(this->snps_location);
 }

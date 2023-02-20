@@ -10,7 +10,7 @@ private:
     string inputfile;
     int seq_length, num_of_snps;
     InputHandler fh;
-    int *snps_location;
+    vector<int> snps_location;
     vector<Vec32c> refvecs;
 public:
     SnpSite(char* _inputfile);
@@ -19,5 +19,4 @@ public:
     void detect_snps();
     void print_result(char* filename);
     void assign_next_sample_to(string *name, string *seq);
-    void clean();
 };

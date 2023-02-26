@@ -1,10 +1,16 @@
 #include "snp_sites.h"
 
 SnpSite::SnpSite(char* _inputfile) {
-    InputHandler fh;
     seq_length = -1;
     num_of_snps = 0;
     inputfile = _inputfile;
+}
+
+void SnpSite::open(const char* filename) {
+    this->instream.reset();
+    std::ifstream file(filename);
+    this->instream.push(boost::iostreams::gzip_decompressor());
+    this->instream.push(boost::iostreams::file_source(filename));
 }
 
 int SnpSite::is_unknown(char base)
@@ -20,15 +26,30 @@ int SnpSite::is_unknown(char base)
     }
 }
 
+/* 
+    Get next sample name and sequence, assign it to *name and *seq.
+*/
+bool SnpSite::next_sample(string *name, string *seq) {
+    name->erase();
+    seq->erase();
+    char c;
+    while (c != '>' && !this->instream.eof()) {
+        c = this->instream.get();
+    } // read until meet sample name
+    if (!getline(this->instream, *name)) return false;
+    getline(this->instream, *seq, '>');
+    return true;
+}
+
 void SnpSite::detect_snps() {
     string sample_name, seq;
-    this->fh.open(this->inputfile.c_str());
+    this->open(this->inputfile.c_str());
     Vec32c seq_vec, ref_vec, tmp_vec;
     const int vectorsize = 32;
     int datasize, arraysize;
     // round up datasize to nearest higher multiple of vectorsize
     // vector<int> snps_loc;
-    while (this->fh.assign_next_sample_to(&sample_name, &seq)) {
+    while (this->next_sample(&sample_name, &seq)) {
         if (this->seq_length == -1) {
             datasize = seq.length();
             // round up datasize to nearest higher multiple of vectorsize
@@ -76,11 +97,10 @@ void SnpSite::print_result(char* filename) {
         fprintf(stderr, "ERROR: cannot open %s for writing: %s\n", filename, strerror(errno));
         exit(EXIT_FAILURE);
     }
-    this->fh.open(this->inputfile.c_str());
-    // this->fh.back2begin();
+    this->open(this->inputfile.c_str());
 
     string sample_name, seq;
-    while (this->fh.assign_next_sample_to(&sample_name, &seq)) {
+    while (this->next_sample(&sample_name, &seq)) {
         fprintf(f, ">%s\n", sample_name.c_str());
         for (int i = 0; i < this->num_of_snps; i++) {
             fputc(seq[this->snps_location[i]], f);

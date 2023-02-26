@@ -1,6 +1,11 @@
 #include <iostream>
 #include "snp_sites.h"
 
+/*
+This version only works with FASTA files.
+*/
+
+
 int main(int argc, char *argv[]) {
     clock_t start, end;
     start = clock();

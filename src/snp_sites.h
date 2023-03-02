@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <thread>
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/device/file.hpp>
@@ -20,6 +21,10 @@ private:
     vector<int> snps_location;
     vector<Vec32c> refvecs;
     boost::iostreams::filtering_istream instream;
+
+    // multithread variables
+    ifstream finstream;
+    vector<string> reference_seqs;
 public:
     SnpSite(char* _inputfile);
 
@@ -28,4 +33,9 @@ public:
     void detect_snps();
     void print_result(char* filename);
     bool next_sample(string *name, string *seq);
+
+    // multithread functions
+    void detect_snps_mt();
+    void detect_snps(streampos start_pos, streampos end_pos);
+    streampos nearest_sample_pos(int pos);
 };

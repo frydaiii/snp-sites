@@ -36,6 +36,6 @@ public:
 
     // multithread functions
     void detect_snps_mt();
-    void detect_snps(streampos start_pos, streampos end_pos);
-    streampos nearest_sample_pos(int pos);
+    void detect_snps_in(streampos start_pos, streampos end_pos);
+    streampos nearest_sample(streampos pos);
 };

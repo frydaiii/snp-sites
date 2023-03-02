@@ -117,7 +117,8 @@ void SnpSite::print_result(char* filename) {
     fclose(f);
 }
 
-streampos SnpSite::nearest_sample_pos(int pos) {
+streampos SnpSite::nearest_sample(streampos pos) {
+    this->finstream.seekg(pos);
     char c;
     while (c != '>' && !this->finstream.eof()) {
         c = this->finstream.get();
@@ -125,7 +126,7 @@ streampos SnpSite::nearest_sample_pos(int pos) {
     return this->finstream.tellg();
 }
 
-void SnpSite::detect_snps(streampos start_pos, streampos end_pos) {
+void SnpSite::detect_snps_in(streampos start_pos, streampos end_pos) {
     string sample_name, seq;
     this->finstream.seekg(start_pos);
     Vec32c seq_vec, ref_vec, tmp_vec;
@@ -167,17 +168,14 @@ void SnpSite::detect_snps(streampos start_pos, streampos end_pos) {
         int k = i / vectorsize;
         refvecs[k].store(tmp);
         reference_seq.append(tmp, vectorsize);
-        // int k = i / vectorsize;
-        // for (int j = 0; j < vectorsize; j++) {
-        //     if (refvecs[k][j] == '>') {
-        //             this->snps_location.push_back(i + j);
-        //     }
-        // }
     }
     this->reference_seqs.push_back(reference_seq);
 }
 
 void SnpSite::detect_snps_mt() {
+    // open file
+    this->open(this->inputfile.c_str());
+
     // get file size
     this->finstream.seekg(0, ios::beg);
     int file_size = this->finstream.tellg();
@@ -189,9 +187,9 @@ void SnpSite::detect_snps_mt() {
     int bytes_per_thread = file_size / num_of_threads;
     vector<thread> threads;
     for (int i = 0; i < num_of_threads; i++) {
-        streampos start_pos = this->nearest_sample_pos(i * bytes_per_thread);
-        streampos end_pos = this->nearest_sample_pos((i + 1) * bytes_per_thread);
-        threads.push_back(thread(SnpSite::detect_snps, start_pos, end_pos));
+        streampos start_pos = this->nearest_sample(i * bytes_per_thread);
+        streampos end_pos = this->nearest_sample((i + 1) * bytes_per_thread);
+        threads.push_back(thread(&SnpSite::detect_snps_in, this, start_pos, end_pos));
     }
     for (int i = 0; i < num_of_threads; i++) {
         threads[i].join();

@@ -38,4 +38,5 @@ public:
     void detect_snps_mt();
     void detect_snps_in(streampos start_pos, streampos end_pos);
     streampos nearest_sample(streampos pos);
+    bool next_sample_f(string *name, string *seq);
 };

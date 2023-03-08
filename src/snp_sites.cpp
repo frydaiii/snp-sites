@@ -117,29 +117,49 @@ void SnpSite::print_result(char* filename) {
     fclose(f);
 }
 
-streampos SnpSite::nearest_sample(streampos pos) {
-    this->finstream.seekg(pos);
+/* 
+    Get next sample name and sequence, assign it to *name and *seq.
+*/
+bool SnpSite::next_sample_f(string *name, string *seq) {
+    name->erase();
+    seq->erase();
     char c;
     while (c != '>' && !this->finstream.eof()) {
         c = this->finstream.get();
     } // read until meet sample name
+    if (!getline(this->finstream, *name)) return false;
+    getline(this->finstream, *seq, '>');
+    return true;
+}
+
+streampos SnpSite::nearest_sample(streampos pos) {
+    this->finstream.seekg(pos);
+    char c = this->finstream.peek();
+    while (c != '>' && !this->finstream.eof()) {
+        c = this->finstream.get();
+    } // read until meet sample name
+    // print tellg
+    cout << "nearest_sample: " << this->finstream.tellg() << endl;
     return this->finstream.tellg();
 }
 
 void SnpSite::detect_snps_in(streampos start_pos, streampos end_pos) {
+    cout << "--------------- begin detect_snps_in ---------------" << start_pos << " " << end_pos << endl;
     string sample_name, seq;
     this->finstream.seekg(start_pos);
     Vec32c seq_vec, ref_vec, tmp_vec;
     const int vectorsize = 32;
-    int datasize, arraysize;
+    int datasize, arraysize, seq_length = -1;
     // round up datasize to nearest higher multiple of vectorsize
     // vector<int> snps_loc;
-    while (this->finstream.tellg() < end_pos && this->next_sample(&sample_name, &seq)) {
-        if (this->seq_length == -1) {
+    while (this->finstream.tellg() < end_pos && this->next_sample_f(&sample_name, &seq)) {
+        cout << "sample_name: " << sample_name << endl;
+        cout << "length: " << seq.length() << endl;
+        if (seq_length == -1) {
             datasize = seq.length();
             // round up datasize to nearest higher multiple of vectorsize
             arraysize = (datasize + vectorsize - 1) & (-vectorsize);
-            this->seq_length = arraysize;
+            seq_length = arraysize;
             for (int i = 0; i < arraysize; i += vectorsize) {
                 refvecs.push_back(Vec32c('N'));
             }
@@ -177,19 +197,24 @@ void SnpSite::detect_snps_mt() {
     this->open(this->inputfile.c_str());
 
     // get file size
-    this->finstream.seekg(0, ios::beg);
-    int file_size = this->finstream.tellg();
     this->finstream.seekg(0, ios::end);
-    file_size = this->finstream.tellg() - file_size;
+    int file_size = this->finstream.tellg();
 
-    // process
     int num_of_threads = 4;
     int bytes_per_thread = file_size / num_of_threads;
+    // this->detect_snps_in(0, this->nearest_sample(1 * bytes_per_thread));
+
+    // process
     vector<thread> threads;
+    vector<streampos> start_poses, end_poses;
     for (int i = 0; i < num_of_threads; i++) {
         streampos start_pos = this->nearest_sample(i * bytes_per_thread);
         streampos end_pos = this->nearest_sample((i + 1) * bytes_per_thread);
-        threads.push_back(thread(&SnpSite::detect_snps_in, this, start_pos, end_pos));
+        start_poses.push_back(start_pos);
+        end_poses.push_back(end_pos);
+    }
+    for (int i = 0; i < num_of_threads; i++) {
+        threads.push_back(thread(&SnpSite::detect_snps_in, this, start_poses[i], end_poses[i]));
     }
     for (int i = 0; i < num_of_threads; i++) {
         threads[i].join();

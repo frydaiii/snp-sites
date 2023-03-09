@@ -25,6 +25,7 @@ private:
     // multithread variables
     ifstream finstream;
     vector<string> reference_seqs;
+    string referrence_seq;
 public:
     SnpSite(char* _inputfile);
 
@@ -35,8 +36,10 @@ public:
     bool next_sample(string *name, string *seq);
 
     // multithread functions
-    void detect_snps_mt();
     void detect_snps_in(streampos start_pos, streampos end_pos);
     streampos nearest_sample(streampos pos);
     bool next_sample_f(string *name, string *seq);
+    string get_reference_seq();
 };
+
+void detect_snps_mt(const char* inputfile, const char* outputfile);

@@ -11,8 +11,8 @@ int main(int argc, char *argv[]) {
     start = clock();
 
     // check to see if the input alignment file exists
-    // argv[1] = "/mnt/c/Users/Teko/Downloads/s_typhi_wong_holt.aln";
-    argv[1] = "/home/manh/snp-sites-1/sample/sample.aln";
+    argv[1] = "/mnt/c/Users/Teko/Downloads/s_typhi_wong_holt.aln";
+    // argv[1] = "/home/manh/snp-sites-1/sample/sample.aln";
     argv[2] = "/home/manh/snp-sites-1/sample/my_code_result.aln";
     // argv[1] = "/mnt/d/s_typhi_wong_holt.aln.gz";
     // argv[2] = "/home/manht/snp-sites-1/sample/their_result.aln";

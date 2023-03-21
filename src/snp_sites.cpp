@@ -154,20 +154,16 @@ streampos SnpSite::nearest_sample(streampos pos) {
 }
 
 void SnpSite::detect_snps_in(streampos start_pos, streampos end_pos) {
-    // cout << "--------------- begin detect_snps_in ---------------" << start_pos << " " << end_pos << endl;
-    string sample_name, seq;
+    // move to start_pos
     this->finstream.clear();
-    // cout << "next_sample_f: " << this->finstream.tellg() << endl;
     this->finstream.seekg(start_pos);
-    // cout << "next_sample_f: " << this->finstream.tellg() << endl;
-    Vec32c seq_vec, ref_vec, tmp_vec;
+
+    // read samples
+    string sample_name, seq;
+    Vec32c seq_vec;
     const int vectorsize = 32;
     int datasize, arraysize, seq_length = -1;
-    // round up datasize to nearest higher multiple of vectorsize
-    // vector<int> snps_loc;
     while (this->finstream.tellg() < end_pos && this->next_sample_f(&sample_name, &seq)) {
-        // cout << "sample_name: " << sample_name << endl;
-        // cout << "length: " << seq.length() << endl;
         if (seq_length == -1) {
             datasize = seq.length();
             // round up datasize to nearest higher multiple of vectorsize
@@ -201,17 +197,12 @@ void SnpSite::detect_snps_in(streampos start_pos, streampos end_pos) {
         refvecs[k].store(tmp);
         this->referrence_seq.append(tmp, vectorsize);
     }
-    // print number of snps
-    // int num_of_snps = 0;
-    // for (int i = 0; i < this->referrence_seq.length(); i++) {
-    //     if (this->referrence_seq[i] == '>') {
-    //         num_of_snps++;
-    //     }
-    // }
-    // cout << "num of snps: " << num_of_snps << endl;
 }
 
 void detect_snps_mt(const char* inputfile, const char* outputfile) {
+    clock_t start, end;
+    start = clock();
+
     ifstream input;
     input.open(inputfile);
     input.seekg(0, input.end);
@@ -219,9 +210,6 @@ void detect_snps_mt(const char* inputfile, const char* outputfile) {
     int num_of_threads = 4;
     long bytes_per_thread = file_size / num_of_threads;
     input.close();
-    // SnpSite * snp = new SnpSite((char*)inputfile);
-    // snp->open(inputfile);
-    // snp->detect_snps_in(0, snp->nearest_sample(1 * bytes_per_thread));
 
     // process
     vector<thread> threads;
@@ -252,6 +240,9 @@ void detect_snps_mt(const char* inputfile, const char* outputfile) {
         threads[i].join();
     }
 
+    end = clock();
+    printf("complete detect %f secs\n", ((double) (end - start)) / CLOCKS_PER_SEC);
+
     // merge
     string reference_seq = snps[0]->get_reference_seq();
     for (int i = 0; i < num_of_threads; i++) {
@@ -265,6 +256,9 @@ void detect_snps_mt(const char* inputfile, const char* outputfile) {
             }
         }
     }
+
+    end = clock();
+    printf("complete merge %f secs\n", ((double) (end - start)) / CLOCKS_PER_SEC);
 
     FILE *f = fopen(outputfile, "w");
     if (!f) {

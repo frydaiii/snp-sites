@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     SnpSite snp_site(argv[1]);
     detect_snps_mt(argv[1], argv[2]);
     end = clock();
-    printf("complete detect %f secs\n", ((double) (end - start)) / CLOCKS_PER_SEC);
+    // printf("complete detect %f secs\n", ((double) (end - start)) / CLOCKS_PER_SEC);
     // snp_site.print_result(argv[2]);
 
     end = clock();

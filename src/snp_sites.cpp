@@ -216,6 +216,7 @@ void detect_snps_mt(const char* inputfile, const char* outputfile) {
     vector<streampos> start_poses, end_poses;
     vector<SnpSite*> snps;
     for (int i = 0; i < num_of_threads; i++) {
+        // todo: optimize
         SnpSite * snp = new SnpSite((char*)inputfile);
         snp->open(inputfile);
         snps.push_back(snp);
